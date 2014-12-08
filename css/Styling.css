@@ -1,0 +1,51 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    font-family: arial;
+    font-size :11px;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#top, #bottom {
+    border:1px solid gray;
+}
+
+#top {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 2;
+}
+
+#toolbar {
+    position: absolute;
+    top: 0px;
+    width: 800px;
+    z-index: 4;
+    margin: 1px;
+    padding: 3px;
+    background-color: #e2e2e2;
+    box-sizing: border-box;
+}
+
+div.cursor {
+    position: absolute;
+    border:1px solid red;
+    border-width: 1px 0 0 1px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+input[type=radio] {
+    display: none;
+}
+#toolbar img {
+    height: 32px;
+    width: 32px;
+}

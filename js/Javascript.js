@@ -2,6 +2,7 @@ $(document).ready(function() {
 
     var width = 1000;
     var height = 600;
+    var lineTool = false;
 
     var rootRef = new Firebase('https://sessionhandler-db.firebaseio.com/');
 
@@ -30,6 +31,7 @@ $(document).ready(function() {
     // reference til Firebase - hiver fat i users
     var usersRef = boardRef.child('users');
     // reference til Firebase - den enkelte user (en selv, sådenset)
+    console.log(usersRef.child(username));
     var userRef = usersRef.child(username);
 
     // Tildel canvas-element til en variabel
@@ -111,12 +113,9 @@ $(document).ready(function() {
     userRef.removeOnDisconnect();
 
     $topCanvas.on('mousedown', function(e) {
-        // Tjekker om farven er hvid - i så fald funger som hviskelæder
-
-
-        if ("#FFFFFF" === $("input[name=brush]:checked").attr('color'))
+        // Tjekker om farven er hvid - i så fald funger som viskelæder
+        if ($("input[name=brush]:checked").attr('color') === "#FFFFFF")
         {
-            console.log("down");
             newLayer = {
                 points: [{x: e.pageX, y: e.pageY}],
                 color: $("input[name=brush]:checked").attr('color'),
@@ -124,7 +123,6 @@ $(document).ready(function() {
             };
         } else
         {
-            console.log("down");
             newLayer = {
                 points: [{x: e.pageX, y: e.pageY}],
                 color: $("input[name=brush]:checked").attr('color'),
@@ -132,11 +130,42 @@ $(document).ready(function() {
             };
         }
 
+        //indtil videre arbejder vi kun med variablerne "lineTool" og "line"
+        if ($("input[name=shape]:checked").attr('shape') === "lineTool")
+        {
+            lineTool = true;
+        } else
+        {
+            lineTool = false;
+        }
+
 
         var now = function() { return new Date().getTime() };
         var last = 0;
         $body.on('mousemove.brush', function(e) {
-            if(last < now() - 20) {
+            if (lineTool) {
+                clear(topCtx);
+                //drawLayer(topCtx, newLayer);
+/*
+                topCtx.beginPath();
+                topCtx.lineWidth = layer.thickness;
+                topCtx.strokeStyle = layer.color;
+                topCtx.moveTo(layer.points[0].x, layer.points[0].y);
+                _.each(_.rest(layer.points, 1), function(point) {
+                    topCtx.lineTo(point.x, point.y);
+                });
+                topCtx.stroke();
+*/
+
+                topCtx.beginPath();
+                topCtx.lineWidth = newLayer.thickness;
+                topCtx.strokeStyle = newLayer.color;
+                topCtx.moveTo(newLayer.points[0].x, newLayer.points[0].y);
+                topCtx.lineTo(e.pageX,   e.pageY);
+                topCtx.stroke();
+                //topCtx.closePath();
+            } else if (!lineTool && last < now() - 20)
+            {
                 newLayer.points.push({x: e.pageX, y: e.pageY});
                 showNewLayer();
                 last = now();
@@ -144,7 +173,12 @@ $(document).ready(function() {
         });
 
         // Når musen løftes fra body-elementet, pushes det nye layer til Firebase
-        $body.one('mouseup', function(e) {
+        $body.on('mouseup', function(e) {
+            if (lineTool)
+            {
+                lineTool = false;
+                newLayer.points.push({x: e.pageX, y: e.pageY});
+            }
             $body.off('mousemove.brush');
             // Push
             layersRef.push(newLayer);

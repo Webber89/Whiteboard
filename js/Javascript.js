@@ -23,19 +23,25 @@ $(document).ready(function() {
     var randNameInd = Math.floor(Math.random()*possibleNames.length);
     var username = possibleNames[randNameInd];
 
+    // boardRef = parent, nuværende session
     var boardRef = rootRef.child(boardId);
+    // reference til Firebase - hiver fat i layers
     var layersRef = boardRef.child('layers');
+    // reference til Firebase - hiver fat i users
     var usersRef = boardRef.child('users');
+    // reference til Firebase - den enkelte user (en selv, sådenset)
     var userRef = usersRef.child(username);
 
+    // Tildel canvas-element til en variabel
     var $body = $("body");
-
     var $bottomCanvas = $('#bottom');
     var $topCanvas = $('#top');
 
+    // Få adgang til DOM-elementerne ^
     var bottomCanvas = $bottomCanvas.get(0);
     var topCanvas = $topCanvas.get(0);
 
+    // Få adgang til 2d-contexten (rendering til HTML5-canvas)
     var bottomCtx = bottomCanvas.getContext('2d');
     var topCtx = topCanvas.getContext('2d');
 
@@ -74,6 +80,7 @@ $(document).ready(function() {
         });
     };
 
+    //Loop der checker på ændring og tilføjelse af canvas
     layersRef.on('child_added', drawChild);
     layersRef.on('child_removed', redraw);
 
@@ -100,6 +107,9 @@ $(document).ready(function() {
     userRef.removeOnDisconnect();
 
     $topCanvas.on('mousedown', function(e) {
+        // Tjekker om farven er hvid - i så fald funger som hviskelæder
+
+
         if ("#FFFFFF" === $("input[name=brush]:checked").attr('color'))
         {
             console.log("down");
@@ -129,8 +139,10 @@ $(document).ready(function() {
             }
         });
 
+        // Når musen løftes fra body-elementet, pushes det nye layer til Firebase
         $body.one('mouseup', function(e) {
             $body.off('mousemove.brush');
+            // Push
             layersRef.push(newLayer);
             clear(topCtx);
         });

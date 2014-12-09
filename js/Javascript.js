@@ -51,7 +51,6 @@ $(document).ready(function() {
         ctx.beginPath();
         ctx.lineWidth = layer.thickness;
         ctx.strokeStyle = layer.color;
-        console.log(layer.thickness);
         ctx.moveTo(layer.points[0].x, layer.points[0].y);
         _.each(_.rest(layer.points, 1), function(point) {
             ctx.lineTo(point.x, point.y);
@@ -101,11 +100,24 @@ $(document).ready(function() {
     userRef.removeOnDisconnect();
 
     $topCanvas.on('mousedown', function(e) {
-        newLayer = {
-            points: [{x: e.pageX, y: e.pageY}],
-            color: $("input[name=brush]:checked").attr('color'),
-            thickness: $("input[name=thickness]:checked").attr('size')
-        };
+        if ("#FFFFFF" === $("input[name=brush]:checked").attr('color'))
+        {
+            console.log("down");
+            newLayer = {
+                points: [{x: e.pageX, y: e.pageY}],
+                color: $("input[name=brush]:checked").attr('color'),
+                thickness: 25
+            };
+        } else
+        {
+            console.log("down");
+            newLayer = {
+                points: [{x: e.pageX, y: e.pageY}],
+                color: $("input[name=brush]:checked").attr('color'),
+                thickness: $("input[name=thickness]:checked").attr('size')
+            };
+        }
+
 
         var now = function() { return new Date().getTime() };
         var last = 0;
@@ -153,14 +165,23 @@ $(document).ready(function() {
 
 // REST - Henter Databasens øverste-objekter med session-id og true (shallow=true)
 // Brug AJAX til at hente JSON i stedet
-$.getJSON('https://sessionhandler-db.firebaseio.com/.json?shallow=true', function(data) {
-    console.log(data);
+$.getJSON('https://sessionhandler-db.firebaseio.com/.json', function(data) {
     $('#sessions').empty();
+    console.log(data);
 
     var sessionId = 1;
 
     $.each(data, function(id, boolean){
-        $('#sessions').append("<a href=#" + id + "> Session "+ sessionId + "</a></br>");
+        var img = document.createElement("img");
+        //img.setAttribute("src", "window.location.toString().replace(/#.*/, '') + '#' + id");
+        img.src = window.location.toString().replace(/#.*/, '') + '#' + id;
+        img.width = 500;
+        img.height = 300;
+
+        //document.body.appendChild("<a href=#" + id + "> Session "+ sessionId + "</a>");
+        document.body.appendChild(img);
+        $('#sessions').append("<a href=#" + id + "> Session "+ sessionId + "</a>");
+        //$('#sessions').append(img + "</br>");
         sessionId++;
     });
 

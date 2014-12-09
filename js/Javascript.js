@@ -145,35 +145,25 @@ $(document).ready(function() {
         $body.on('mousemove.brush', function(e) {
             if (lineTool) {
                 clear(topCtx);
-                //drawLayer(topCtx, newLayer);
-/*
-                topCtx.beginPath();
-                topCtx.lineWidth = layer.thickness;
-                topCtx.strokeStyle = layer.color;
-                topCtx.moveTo(layer.points[0].x, layer.points[0].y);
-                _.each(_.rest(layer.points, 1), function(point) {
-                    topCtx.lineTo(point.x, point.y);
-                });
-                topCtx.stroke();
-*/
-
                 topCtx.beginPath();
                 topCtx.lineWidth = newLayer.thickness;
                 topCtx.strokeStyle = newLayer.color;
                 topCtx.moveTo(newLayer.points[0].x, newLayer.points[0].y);
                 topCtx.lineTo(e.pageX,   e.pageY);
                 topCtx.stroke();
-                //topCtx.closePath();
-            } else if (!lineTool && last < now() - 20)
+            } else if (last < now() - 20)
             {
                 newLayer.points.push({x: e.pageX, y: e.pageY});
                 showNewLayer();
                 last = now();
             }
+
         });
 
+
+
         // Når musen løftes fra body-elementet, pushes det nye layer til Firebase
-        $body.on('mouseup', function(e) {
+        $body.one('mouseup', function(e) {
             if (lineTool)
             {
                 lineTool = false;
@@ -205,6 +195,7 @@ $(document).ready(function() {
     $("#undo").on('click', function() {
         var query = layersRef.limit(1);
         query.once('child_added', function(snapshot) {
+            console.log(layersRef.child(snapshot.name()));
             layersRef.child(snapshot.name()).remove();
         });
     });

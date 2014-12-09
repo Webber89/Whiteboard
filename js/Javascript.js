@@ -88,13 +88,17 @@ $(document).ready(function() {
         var name = snapshot.name();
         var user = snapshot.val();
 
+        // lav dynamisk brugerID
         id = "cursor_"+name;
         var $cursor = $("#"+id);
+        var $cursorPrt = $('#cursorPrt');
         if(!$cursor.length) {
+            //
             $cursor = $('<div>').attr('id', id).addClass('cursor').text(name)
                 .appendTo('body');
         }
 
+        $cursorPrt.html(user.cursorPoint.x + ", " + (user.cursorPoint.y - 40));
         $cursor.css('left', user.cursorPoint.x).css('top', user.cursorPoint.y);
     });
 
@@ -155,6 +159,10 @@ $(document).ready(function() {
         }, 30)
     );
 
+
+    $("#new").on('click', function() {
+        window.location = "index.html";
+    });
 
     $("#clear").on('click', function() {
         layersRef.remove();

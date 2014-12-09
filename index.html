@@ -1,36 +1,39 @@
 <!DOCTYPE html>
 <head>
   <title>Whiteboard</title>
-  <link rel="stylesheet" type="text/css" href="css/Styling.css"></style>
-<meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
+  <link rel="stylesheet" type="text/css" href="css/Styling.css"></head>
+<meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport'/>
 <meta name="viewport" content="width=device-width" />
 
 </head>
-
 <body style>
   <canvas id="bottom" width="1000" height="600"></canvas>
   <canvas id="top" width="1000" height="600"></canvas>
 
   <div id="toolbar">
-    <span id="clear" hotkey="67"><img src="images/clear.png"></span>
-    <span id="undo" hotkey="90"><img src="images/undo.png"></span>
+    <span id="new"><img src="images/new.png"></span>
+    <span id="clear"><img src="images/clear.png"></span>
+    <span id="undo"><img src="images/undo.png"></span>
 
-    <label><input type="radio" name="brush" color="#000000" hotkey="66" checked="checked"/><img src="images/black.png"></label>
-    <label><input type="radio" name="brush" color="#008000" hotkey="71"/><img src="images/green.png"></label>
-    <label><input type="radio" name="brush" color="#FF0000" hotkey="82"/><img src="images/red.png"></label>
-    <label><input type="radio" name="brush" color="#0000FF" hotkey="76"/><img src="images/blue.png"></label>
-    <label><input type="radio" name="brush" color="#FFFFFF" hotkey="69"/><img src="images/erase.png"></label>
+    <label><input type="radio" name="brush" color="#000000" checked="checked"/><img src="images/black.png"></label>
+    <label><input type="radio" name="brush" color="#008000"/><img src="images/green.png"></label>
+    <label><input type="radio" name="brush" color="#FF0000"/><img src="images/red.png"></label>
+    <label><input type="radio" name="brush" color="#0000FF"/><img src="images/blue.png"></label>
+    <label><input type="radio" name="brush" color="#FFFFFF"/><img src="images/erase.png"></label>
 
     <label><input type="radio" name="thickness" size="1" checked/><img src="images/paint_brush.png"></label>1
     <label><input type="radio" name="thickness" size="2"/><img src="images/paint_brush.png"></label>2
     <label><input type="radio" name="thickness" size="3"/><img src="images/paint_brush.png"></label>3
     <label><input type="radio" name="thickness" size="4"/><img src="images/paint_brush.png"></label>4
     <label><input type="radio" name="thickness" size="5"/><img src="images/paint_brush.png"></label>5
+
+    <label><input type="radio" name="shape" shape="line"/><img src="images/red.png"></label>
+    <label><input type="radio" name="shape" shape="square"><img src="images/black.png"></label>
+    <label><input type="radio" name="shape" shape="triangle"/><img src="images/green.png"></label>
+    <label><input type="radio" name="shape" shape="circle"/><img src="images/red.png"></label>
+
+
   </div>
-
-
-
-
 
   <script type="text/javascript" src="js/underscore-min.js"></script>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -40,7 +43,7 @@
 </body>
 
 <html>
-
+  <div id="cursorPrt"></div>
   <div id="sessions"></div>
 
 </html>

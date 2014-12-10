@@ -31,8 +31,17 @@ $(document).ready(function() {
     // reference til Firebase - hiver fat i users
     var usersRef = boardRef.child('users');
     // reference til Firebase - den enkelte user (en selv, sådenset)
-    console.log(usersRef.child(username));
     var userRef = usersRef.child(username);
+
+    //Ændre navn. Først fjernes nuværende navn fra databasen,
+    //inputtet bliver gemt i variablen username og en ny reference
+    //til databasen bliver lavet
+    $( "input[type='text']" ).change(function() {
+        usersRef.child(username).remove();
+        username = $("#nameInput").val();
+        userRef = usersRef.child(username);
+    });
+
 
     // Tildel canvas-element til en variabel
     var $body = $("body");
@@ -110,8 +119,9 @@ $(document).ready(function() {
 
     // User input:
 
-    userRef.removeOnDisconnect();
+    userRef.onDisconnect().remove();
 
+    //mousedown event til at optage mouse events
     $topCanvas.on('mousedown', function(e) {
         // Tjekker om farven er hvid - i så fald funger som viskelæder
         if ($("input[name=brush]:checked").attr('color') === "#FFFFFF")
@@ -231,3 +241,4 @@ $.getJSON('https://sessionhandler-db.firebaseio.com/.json', function(data) {
     });
 
 });
+

@@ -56,7 +56,16 @@ $(document).ready(function() {
     var bottomCtx = bottomCanvas.getContext('2d');
     var topCtx = topCanvas.getContext('2d');
 
+    var saveLayer;
+
     var newLayer;
+
+    var download = function() {
+        saveLayer = bottomCanvas.toDataURL('image/png');
+        this.href = saveLayer;
+    };
+
+    getCanvas.addEventListener('click', download, false);
 
     // View:
 

@@ -2,8 +2,6 @@
 <head>
   <title>Whiteboard</title>
   <link rel="stylesheet" type="text/css" href="css/Styling.css"></head>
-<meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport'/>
-<meta name="viewport" content="width=device-width" />
 
 </head>
 <body style>
@@ -27,33 +25,34 @@
     <label><input type="radio" name="thickness" size="4"/><img src="images/paint_brush.png"></label>4
     <label><input type="radio" name="thickness" size="5"/><img src="images/paint_brush.png"></label>5
 
-    <!-- pen, normal tegne -->
-    <label><input type="radio" name="shape" shape="line" checked /><img src="images/free_hand.png"></label>
+    <!-- pen, normal tegne. Tilføjet id til når viskelæderet skal bruges -->
+    <label><input type="radio" name="shape" id="white" shape="line" checked /><img src="images/free_hand.png"></label>
     <!-- line tool, en lige streg-->
     <label><input type="radio" name="shape" shape="lineTool"/><img src="images/line_tool.png"></label>
     <!-- firkant -->
-    <label><input type="radio" name="shape" shape="square"><img src="images/black.png"></label>
-    <!-- trekant -->
-    <label><input type="radio" name="shape" shape="triangle"/><img src="images/green.png"></label>
-    <!-- cirkel -->
-    <label><input type="radio" name="shape" shape="circle"/><img src="images/red.png"></label>
+    <label><input type="radio" name="shape" shape="squareTool"><img src="images/square_tool.png"></label>
 
     <input type="text" id="nameInput" value="anon" />
 
 
-  </div>
 
-  <a id="getCanvas" download="untitled.png">Hent canvas som billede</a>
+  </div>
+  <br>
+  <a id="getCanvas" download="untitled.png">Hent canvas som billede</a><br>
+  <a id="getJsonCanvas">Hent canvas som JSON (tekst)</a>
   <script type="text/javascript" src="js/underscore-min.js"></script>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script type="text/javascript" src="js/angular.min.js"></script>
   <script type="text/javascript" src="js/firebase.js"></script>
   <script type="text/javascript" src="js/main.js"></script>
 
+  <div id="cursorPrt"></div>
+  <div id="sessions"></div>
+
 </body>
 
 <html>
-  <div id="cursorPrt"></div>
-  <div id="sessions"></div>
+
+
 
 </html>

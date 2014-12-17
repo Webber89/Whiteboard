@@ -3,6 +3,7 @@ $(document).ready(function() {
     var width = 1000;
     var height = 600;
     var lineTool = false;
+    var squareTool = false;
 
     var rootRef = new Firebase('https://sessionhandler-db.firebaseio.com/');
 
@@ -19,8 +20,9 @@ $(document).ready(function() {
         });
     }, 0);
 
-    var possibleNames = ["Joe", "Jenny", "Bob", "Frank", "Sally", "Anne",
-        "James", "Gretchen", "Tammy", "Hodor", "Brian", "Jennifer", "Jill", "Jen"];
+    //give new user random name
+    var possibleNames = ["Pikachu", "Mario", "Yoshi", "Luigi", "Kirby", "Leonardo",
+        "Hodor", "MegaMan", "Bowser", "Zelda", "Michelangelo", "Donatello", "Raphael", "DonkeyKong"];
     var randNameInd = Math.floor(Math.random()*possibleNames.length);
     var username = possibleNames[randNameInd];
 
@@ -42,7 +44,6 @@ $(document).ready(function() {
         userRef = usersRef.child(username);
     });
 
-
     // Tildel canvas-element til en variabel
     var $body = $("body");
     var $bottomCanvas = $('#bottom');
@@ -56,16 +57,25 @@ $(document).ready(function() {
     var bottomCtx = bottomCanvas.getContext('2d');
     var topCtx = topCanvas.getContext('2d');
 
-    var saveLayer;
-
+    // Variabel der kommer til at gemme data over en streg og sendt til databasen
     var newLayer;
 
-    var download = function() {
-        saveLayer = bottomCanvas.toDataURL('image/png');
-        this.href = saveLayer;
+    // downloadJsonCanvas virker ikke endnu, men er sat op på HTML for nemhedens skyld.
+    // downloadCanvas virker og gemmer nuværende canvas til sin computer som .png
+    var downloadCanvas = function() {
+        this.href = bottomCanvas.toDataURL('image/png');
     };
 
-    getCanvas.addEventListener('click', download, false);
+    var downloadJsonCanvas = function()
+    {
+        console.log("getBoardValues: " + getBoardValues);
+        //console.log(getBoardValues.val());
+        //console.log(this.boardRef.val());
+        console.log(boardRef.val());
+    }
+
+    getCanvas.addEventListener('click', downloadCanvas, false);
+    getJsonCanvas.addEventListener('click', downloadJsonCanvas, false);
 
     // View:
 
@@ -135,6 +145,8 @@ $(document).ready(function() {
         // Tjekker om farven er hvid - i så fald funger som viskelæder
         if ($("input[name=brush]:checked").attr('color') === "#FFFFFF")
         {
+            // her sættes free hand til true for at viskelæderet bruges frit.
+            document.getElementById("white").checked = true;
             newLayer = {
                 points: [{x: e.pageX, y: e.pageY}],
                 color: $("input[name=brush]:checked").attr('color'),
@@ -158,6 +170,13 @@ $(document).ready(function() {
             lineTool = false;
         }
 
+        if ($("input[name=shape]:checked").attr('shape') === "squareTool")
+        {
+            squareTool = true;
+        } else
+        {
+            squareTool = false;
+        }
 
         var now = function() { return new Date().getTime() };
         var last = 0;
@@ -170,6 +189,25 @@ $(document).ready(function() {
                 topCtx.moveTo(newLayer.points[0].x, newLayer.points[0].y);
                 topCtx.lineTo(e.pageX,   e.pageY);
                 topCtx.stroke();
+            } else if (squareTool)
+            {
+                var x = Math.min(e.pageX, newLayer.points[0].x);
+                var y = Math.min(e.pageY, newLayer.points[0].y);
+                var w = Math.abs(e.pageX - newLayer.points[0].x);
+                var h = Math.abs(e.pageY - newLayer.points[0].y);
+
+                console.log("x: " + x + ", y: " + y + ", w: " + w + ", h: " + h);
+
+                topCtx.lineWidth = newLayer.thickness;
+                topCtx.strokeStyle = newLayer.color;
+
+                topCtx.clearRect(0, 0, width, height);
+
+                if (!w || !h) {
+                    return;
+                }
+
+                topCtx.strokeRect(x, y, w, h);
             } else if (last < now() - 20)
             {
                 newLayer.points.push({x: e.pageX, y: e.pageY});
@@ -179,14 +217,23 @@ $(document).ready(function() {
 
         });
 
-
-
         // Når musen løftes fra body-elementet, pushes det nye layer til Firebase
         $body.one('mouseup', function(e) {
             if (lineTool)
             {
                 lineTool = false;
                 newLayer.points.push({x: e.pageX, y: e.pageY});
+            } else if (squareTool)
+            {
+                var mouseX = e.pageX;
+                var mouseY = e.pageY;
+
+                squareTool = false;
+
+                newLayer.points.push({x: mouseX, y: newLayer.points[0].y});
+                newLayer.points.push({x: mouseX, y: mouseY});
+                newLayer.points.push({x: newLayer.points[0].x, y: mouseY});
+                newLayer.points.push({x: newLayer.points[0].x, y: newLayer.points[0].y});
             }
             $body.off('mousemove.brush');
             // Push
@@ -202,19 +249,21 @@ $(document).ready(function() {
         }, 30)
     );
 
-
+    // Starter ny session
     $("#new").on('click', function() {
         window.location = "index.html";
     });
 
+    // Rydder hele canvas
     $("#clear").on('click', function() {
         layersRef.remove();
     });
 
+    // Fjerner brugerens seneste streg fra canvas
     $("#undo").on('click', function() {
         var query = layersRef.limit(1);
         query.once('child_added', function(snapshot) {
-            console.log(layersRef.child(snapshot.name()));
+            //console.log(layersRef.child(snapshot.name()));
             layersRef.child(snapshot.name()).remove();
         });
     });
@@ -223,31 +272,20 @@ $(document).ready(function() {
     topCanvas.onselectstart = function () { return false; };
 });
 
-
-
 // Sessions
 
 // REST - Henter Databasens øverste-objekter med session-id og true (shallow=true)
+// Udkast indtil videre.
 // Brug AJAX til at hente JSON i stedet
 $.getJSON('https://sessionhandler-db.firebaseio.com/.json', function(data) {
     $('#sessions').empty();
-    console.log(data);
 
     var sessionId = 1;
 
     $.each(data, function(id, boolean){
-        var img = document.createElement("img");
-        //img.setAttribute("src", "window.location.toString().replace(/#.*/, '') + '#' + id");
-        img.src = window.location.toString().replace(/#.*/, '') + '#' + id;
-        img.width = 500;
-        img.height = 300;
 
-        //document.body.appendChild("<a href=#" + id + "> Session "+ sessionId + "</a>");
-        document.body.appendChild(img);
         $('#sessions').append("<a href=#" + id + "> Session "+ sessionId + "</a>");
-        //$('#sessions').append(img + "</br>");
         sessionId++;
     });
 
 });
-

@@ -8,12 +8,14 @@ $(document).ready(function() {
     var rootRef = new Firebase('https://sessionhandler-db.firebaseio.com/');
 
     //Choose a random whiteboard
+    // Nedenstående lavet af Anton Hansen og Andreas Weber
     var boardId = window.location.hash.replace(/#/g, '') || rootRef.push().name();
     var wurl = window.location.toString().replace(/#.*/, '') + '#' + boardId;
     window.location = wurl;
     $("#toolbar").append("<a style='float: right; margin-top: 4px; margin-right: 10px;'></a>");
 
-    //if the hash changes again, reload the page
+    // hvis hash'en ændres, reload siden
+    // Lavet af Anton Hansen
     setTimeout(function() {
         $(window).on('hashchange', function() {
             window.location.reload();
@@ -38,6 +40,7 @@ $(document).ready(function() {
     //Ændre navn. Først fjernes nuværende navn fra databasen,
     //inputtet bliver gemt i variablen username og en ny reference
     //til databasen bliver lavet
+    // Lavet af Andreas Weber
     $( "input[type='text']" ).change(function() {
         usersRef.child(username).remove();
         username = $("#nameInput").val();
@@ -60,6 +63,7 @@ $(document).ready(function() {
     // Variabel der kommer til at gemme data over en streg og sendt til databasen
     var newLayer;
 
+    // downloadJsonCanvas og downloadCanvas er lavet af Andreas Weber
     // downloadJsonCanvas virker ikke endnu, men er sat op på HTML for nemhedens skyld.
     // downloadCanvas virker og gemmer nuværende canvas til sin computer som .png
     var downloadCanvas = function() {
@@ -79,6 +83,8 @@ $(document).ready(function() {
 
     // View:
 
+    // Funktionerne 'clear', 'drawLayer', 'showNewLayer',
+    // 'drawChild' og 'redraw' er lavet af Anton Hansen og Andreas Weber
     var clear = function(ctx) {
         ctx.clearRect(0, 0, width, height);
     };
@@ -114,6 +120,7 @@ $(document).ready(function() {
     layersRef.on('child_added', drawChild);
     layersRef.on('child_removed', redraw);
 
+    // Nedenstående metode er lavet af Anton Hansen
     usersRef.on('child_changed', function(snapshot) {
         var name = snapshot.name();
         var user = snapshot.val();
@@ -132,15 +139,17 @@ $(document).ready(function() {
         $cursor.css('left', user.cursorPoint.x).css('top', user.cursorPoint.y);
     });
 
+    // Lavet af Anton Hansen
     usersRef.on('child_removed', function(snapshot) {
         $("#cursor_"+snapshot.name()).remove();
     });
 
-    // User input:
-
     userRef.onDisconnect().remove();
 
+    // User input:
+
     //mousedown event til at optage mouse events
+    // Lavet af Anton Hansen og Andreas Weber
     $topCanvas.on('mousedown', function(e) {
         // Tjekker om farven er hvid - i så fald funger som viskelæder
         if ($("input[name=brush]:checked").attr('color') === "#FFFFFF")
@@ -242,6 +251,7 @@ $(document).ready(function() {
         });
     });
 
+    //Lavet af Andreas Weber
     $topCanvas.on(
         'mousemove',
         _.throttle(function(e) {
@@ -250,20 +260,22 @@ $(document).ready(function() {
     );
 
     // Starter ny session
+    // Lavet af Anton Hansen
     $("#new").on('click', function() {
         window.location = "index.html";
     });
 
     // Rydder hele canvas
+    // Lavet af Andreas Weber
     $("#clear").on('click', function() {
         layersRef.remove();
     });
 
     // Fjerner brugerens seneste streg fra canvas
+    // Lavet af Andreas Weber
     $("#undo").on('click', function() {
         var query = layersRef.limit(1);
         query.once('child_added', function(snapshot) {
-            //console.log(layersRef.child(snapshot.name()));
             layersRef.child(snapshot.name()).remove();
         });
     });
@@ -277,13 +289,14 @@ $(document).ready(function() {
 // REST - Henter Databasens øverste-objekter med session-id og true (shallow=true)
 // Udkast indtil videre.
 // Brug AJAX til at hente JSON i stedet
+// Lavet af Anton Hansen
 $.getJSON('https://sessionhandler-db.firebaseio.com/.json', function(data) {
     $('#sessions').empty();
 
     var sessionId = 1;
 
     $.each(data, function(id, boolean){
-
+        document.body.appendChild(img);
         $('#sessions').append("<a href=#" + id + "> Session "+ sessionId + "</a>");
         sessionId++;
     });
